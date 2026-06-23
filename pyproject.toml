@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "repomosaic"
+version = "0.1.0"
+description = "Generate repository knowledge graphs and contributor skill maps"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "RepoMosaic contributors" }]
+dependencies = [
+    "networkx>=3.0",
+]
+
+[project.scripts]
+repomosaic = "repomosaic.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["repomosaic*"]
