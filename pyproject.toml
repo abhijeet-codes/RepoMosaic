@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "repomosaic"
-version = "0.3.0"
+version = "0.4.0"
 description = "Generate a call graph and skill map from a repository"
 authors = [
     { name = "RepoMosaic Developers", email = "you@example.com" },
