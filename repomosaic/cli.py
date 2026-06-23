@@ -24,8 +24,8 @@ def _parse_args(argv: Sequence[str]) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def run(argv: Sequence[str] | None = None) -> int:
-    args = _parse_args(argv or [])
+def run(argv: Sequence[str]) -> int:
+    args = _parse_args(argv)
     if args.command == "build":
         scanner = RepoScanner(args.repo)
         files = scanner.get_files(args.ext)
@@ -48,7 +48,11 @@ def run(argv: Sequence[str] | None = None) -> int:
     return 0
 
 
-if __name__ == "__main__":
+def main() -> int:
     import sys
 
-    raise SystemExit(run(sys.argv[1:]))
+    return run(sys.argv[1:])
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
