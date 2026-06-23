@@ -10,17 +10,18 @@ contributors have touched which files.  RepoMosaic is inspired by
 [Understand Anything](https://github.com/isyour/understand-anything),
 but aims to be simpler and easier to extend.
 
-**New in v0.3.0** – RepoMosaic enters its third major release with first‑class
-support for VS Code‑based assistants like GitHub Copilot Chat and Code Pilot,
-alongside Claude Code, OpenAI Codex, Cursor, Trae and other agentic IDEs.
-This release ships multiple skill manifests for these platforms (in
-`.claude/skills/repomosaic`, `.codex/skills/repomosaic`, `.cursor/skills/repomosaic`
-and `.trae/skills/repomosaic`) plus a richer `AGENTS.md`.  The new 3D
-overview image above summarises the features at a glance.  When installed,
-your coding assistant builds and consults a project‑wide call graph and
-contributor skill map before reading raw files, dramatically reducing token
-usage and improving navigation.  See the *AI assistant integration* section
-below for details.
+**New in v0.4.0** – RepoMosaic expands beyond a single repository to cover
+**entire organisations or users**.  Use the new `--owner` option to
+download every repository under a GitHub organisation or username and
+aggregate them into one unified call graph and skill map.  Version 0.4.0 also
+adds compatibility with **Ollama**, enabling local LLMs and IDEs such as
+Continue to leverage RepoMosaic’s graphs.  Of course, we continue to support
+VS Code–based assistants like GitHub Copilot Chat and Code Pilot, alongside
+Claude Code, OpenAI Codex, Cursor, Trae and more.  New skill manifests are
+provided under `.ollama/skills/repomosaic`, and the `AGENTS.md` file
+explains how to build cross‑repository graphs.  With this release your
+assistant can scan entire organisations to surface reusable components and
+expertise, uncovering hidden knowledge across projects.
 
 ## Features
 
@@ -33,6 +34,13 @@ below for details.
 * **Skill mapping** – analyse the Git commit history of the
   repository to determine which authors have edited which files.
 
+* **Organisation‑level analysis** – supply a GitHub organisation or
+  username with `--owner` and RepoMosaic will retrieve all repositories
+  under that owner (respecting any provided personal access token),
+  generate graphs and skill maps for each, then merge them into a
+  single aggregated structure.  This helps you discover patterns and
+  code reuse across projects and identify experts within your company.
+
 * **AI coding assistant integration** – version 0.3.0 adds support for
   AI coding assistants across the major IDEs and frameworks.  When
   installed as a skill, RepoMosaic automatically builds a call graph
@@ -44,6 +52,13 @@ below for details.
   `.claude/skills/repomosaic`, `.codex/skills/repomosaic`,
   `.cursor/skills/repomosaic` and `.trae/skills/repomosaic` to guide
   agents on how to invoke the tool.
+* **Expanded AI integration** – v0.4.0 extends this integration to
+  **Ollama** for local models.  A new manifest directory
+  `.ollama/skills/repomosaic` allows Ollama‑powered agents to load
+  RepoMosaic as a skill.  The universal `AGENTS.md` file now
+  documents how to perform multi‑repository scans with `--owner` and
+  explains to agents (including Continue) where to find the aggregated
+  graphs.
 * **CLI** – build graphs and skill maps from the command line.
 * **Extensible LLM support** – stub classes are provided for
   integrating language model APIs with the generated data.
@@ -82,6 +97,18 @@ The output file can be viewed with many graph tools such as
 Gephi or Cytoscape.  If no output file is supplied the CLI will
 report the number of nodes and edges it found.
 
+To build a graph across **all repositories for an owner**, use the
+`--owner` flag.  For example, to aggregate every public repository under
+the `python` organisation into one graph:
+
+```bash
+python -m repomosaic.cli build --owner python --out python_org.json
+```
+
+You can optionally pass `--token <GITHUB_PAT>` to authenticate private
+repositories and avoid API rate limits when scanning large
+organisations.
+
 ### Computing a skill map
 
 Compute which authors edited which files:
@@ -92,6 +119,17 @@ python -m repomosaic.cli skills --repo /path/to/local/repo
 
 Each contributor and the files they touched are printed to standard
 output along with how many commits they made to that file.
+
+To aggregate skills across **all repositories for an owner**, supply
+the `--owner` flag:
+
+```bash
+python -m repomosaic.cli skills --owner my-org
+```
+
+This prints the combined file‑level commit counts for each contributor
+across all repositories under `my-org`.  You can also provide
+`--token <PAT>` to access private repos.
 
 ### Programmatic API
 
@@ -134,10 +172,13 @@ more advanced analysis.  Possible future improvements include:
 
 ## AI assistant integration
 
-RepoMosaic v0.3.0 can be installed as an AI coding assistant skill.  It is
+RepoMosaic v0.4.0 can be installed as an AI coding assistant skill.  It is
 compatible with VS Code–based assistants (GitHub Copilot Chat and Code Pilot),
-Claude Code, OpenAI Codex CLI, Cursor, Trae, OpenCode, Factory Droid and
-dozens of other agents that support the open SKILL/AGENTS standards.
+Claude Code, OpenAI Codex CLI, Cursor, Trae, **Ollama/Continue**, OpenCode,
+Factory Droid and dozens of other agents that support the open SKILL/AGENTS
+standards.  Version 0.4.0 extends support to local model hosts like
+Ollama, allowing you to run RepoMosaic alongside your preferred LLM on your
+own machine.
 
 When you run the install step (`python -m repomosaic.cli install --project`),
 RepoMosaic writes several files into your project:
@@ -149,6 +190,8 @@ RepoMosaic writes several files into your project:
   for skills here when running inside VS Code.
 * `.cursor/skills/repomosaic/SKILL.md` – manifest for Cursor IDE.
 * `.trae/skills/repomosaic/SKILL.md` – manifest for Trae.
+* `.ollama/skills/repomosaic/SKILL.md` – manifest for Ollama/Continue and other
+  local LLM environments.
 * `AGENTS.md` – a universal instruction file that teaches AI coding
   assistants how to work with this project.  In RepoMosaic it explains
   how to build the graph, where to find the output (by default in
@@ -156,11 +199,13 @@ RepoMosaic writes several files into your project:
   exploration and assign work.  Agents that do not support PreToolUse
   hooks fall back to reading `AGENTS.md`.
 
-After installation, open your AI coding assistant and type `/repomosaic .` to
-build the knowledge graph.  The assistant will automatically consult the
+After installation, open your AI coding assistant and invoke the skill
+according to your platform.  For example, type `/repomosaic --repo .` to
+build a graph for the current project or `/repomosaic --owner my-org` to
+scan an entire organisation.  The assistant will automatically consult the
 generated graph and skill map before reading raw files.  In VS Code
-(Copilot Chat or Code Pilot), you can simply invoke `/repomosaic .` in the chat
-panel to run the skill.  Cursor and Trae follow the same convention.
+(Copilot Chat or Code Pilot), you can invoke `/repomosaic` in the chat
+panel.  Cursor, Trae and Ollama follow the same convention.
 
 ## License
 
