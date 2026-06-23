@@ -35,6 +35,9 @@ and use the knowledge graph:
    arbitrary code.
 
 These instructions apply to any coding agent that reads `AGENTS.md`,
-including Claude Code, OpenAI Codex, Cursor and many others.  Agents
-that support pre‑tool hooks will also see a notification when a
-`repomosaic-out` directory exists.
+including GitHub Copilot Chat, Code Pilot, Claude Code, OpenAI Codex CLI,
+Cursor, Trae and many others.  Agents that support pre‑tool hooks will
+also see a notification when a `repomosaic-out` directory exists.  On
+platforms like Cursor or Trae, which lack pre‑tool hooks, the contents
+of this file serve as the always‑on instructions for graph building and
+skill mapping.
