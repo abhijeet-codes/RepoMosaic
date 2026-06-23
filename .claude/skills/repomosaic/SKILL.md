@@ -1,6 +1,6 @@
 ---
 name: repomosaic
-version: 0.2.0
+version: 0.3.0
 description: Build a call graph and contributor skill map from a repository.
 author: RepoMosaic Developers
 trigger: "/repomosaic"
