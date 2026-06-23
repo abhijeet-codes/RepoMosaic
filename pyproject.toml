@@ -1,21 +1,20 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "repomosaic"
-version = "0.2.0"
-description = "Generate repository knowledge graphs and contributor skill maps"
+version = "0.3.0"
+description = "Generate a call graph and skill map from a repository"
+authors = [
+    { name = "RepoMosaic Developers", email = "you@example.com" },
+]
+license = { file = "LICENSE" }
 readme = "README.md"
-requires-python = ">=3.9"
-license = { text = "MIT" }
-authors = [{ name = "RepoMosaic contributors" }]
+requires-python = ">=3.8"
 dependencies = [
     "networkx>=3.0",
 ]
 
 [project.scripts]
-repomosaic = "repomosaic.cli:main"
-
-[tool.setuptools.packages.find]
-include = ["repomosaic*"]
+repomosaic = "repomosaic.cli:run"
